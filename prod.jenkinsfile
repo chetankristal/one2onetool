@@ -65,30 +65,24 @@ pipeline {
             }
         }
     }
-        post {
-        failure {
+    post {
+        always {
             script {
-                // Send an email on build failure
-                emailext to: 'chetan.anandlove@gmail.com',
-                         subject: 'Build Failed: ${currentBuild.fullDisplayName}',
-                         body: """
-                         The build ${currentBuild.fullDisplayName} has failed.
+                // Determine the build result
+                def buildStatus = currentBuild.result ?: 'SUCCESS'
 
-                         Build URL: ${env.BUILD_URL}
-                         """
-            }
-        }
-        success {
-            script {
-                // Send an email on build success (optional)
-                emailext to: 'chetan.anandlove@gmail.com',
-                         subject: 'Build Succeeded: ${currentBuild.fullDisplayName}',
-                         body: """
-                         The build ${currentBuild.fullDisplayName} has succeeded.
+                // Define the subject of the email
+                def subject = "Jenkins Job: ${env.JOB_NAME} - ${buildStatus}"
 
-                         Build URL: ${env.BUILD_URL}
-                         """
+                // Send the email
+                emailext(
+                    subject: subject,
+                    body: "Build ${buildStatus}: ${env.BUILD_URL}",
+                    to: 'chetan.anandlove@gmail.com',
+                    attachLog: true, // Attach the build log
+                )
             }
         }
     }
+
 }
