@@ -57,9 +57,6 @@ pipeline {
         }
         
         stage('Deploy to Production') {
-            when {
-                branch 'release'
-            }
             steps {
                 // Add deployment steps for staging branch
                 echo "for staging"
